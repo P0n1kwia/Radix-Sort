@@ -15,6 +15,8 @@ public:
 	void setVec3(const std::string& name, const glm::vec3& vec);
 	void setInt(const std::string& name, int value);
 
+	void CompileCompute(const std::string& computePath);
+
 	Shader() = default;
 	~Shader();
 	Shader(const Shader&) = delete;

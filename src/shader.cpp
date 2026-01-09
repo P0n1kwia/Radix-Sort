@@ -132,6 +132,42 @@ void Shader::setInt(const std::string& name, int value)
 {
 	glUniform1i(GetUniformLocation(name), value);
 }
+void Shader::CompileCompute(const std::string& computePath)
+{
+	std::string computeCode;
+	std::ifstream computeFile;
+	computeFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+	try
+	{
+		std::stringstream computeSS;
+		computeFile.open(computePath);
+		computeSS << computeFile.rdbuf();
+		computeFile.close();
+
+		computeCode = computeSS.str();
+
+	}
+	catch (std::ifstream::failure e)
+	{
+		std::cerr << "Failed  to open shader File! " << e.what() << "\n";
+	}
+	const char* computeSource = computeCode.c_str();
+	unsigned int compute = glCreateShader(GL_COMPUTE_SHADER);
+	glShaderSource(compute, 1, &computeSource, nullptr);
+	glCompileShader(compute);
+	CheckCompilationErrors(compute, "COMPUTE");
+
+
+
+	ID = glCreateProgram();
+	glAttachShader(ID, compute);
+	glLinkProgram(ID);
+	CheckCompilationErrors(ID, "PROGRAM");
+	glDeleteShader(compute);
+
+
+
+}
 void Shader::setVec3(const std::string& name, const glm::vec3& vec)
 {
 	glUniform3fv(GetUniformLocation(name), 1, &vec[0]);

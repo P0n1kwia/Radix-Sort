@@ -2,7 +2,7 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <iostream>
-#include <filesystem>
+#include <random>
 
 #include <shader.h>
 
@@ -59,20 +59,67 @@ int main()
 	glEnableVertexAttribArray(0);
 	glBindVertexArray(0);
 	
+	//seting up compute shader
+	Shader computeShader;
+	computeShader.CompileCompute("shaders/radixCompute.glsl");
 
+
+	//COMPUTE SHADER
+
+	std::random_device dev;
+	std::mt19937 rnd{ dev() };
+	std::uniform_int_distribution<int> dist{ 1,100000 };
+
+	auto gen = [&]() {
+		return dist(rnd);
+		};
+
+
+	std::vector<int> test = { 0,2,4,6,8,10 };
+	unsigned int ssbo;
+	glGenBuffers(1, &ssbo);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, test.size() * sizeof(int), test.data(),GL_STATIC_DRAW);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ssbo);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
+	unsigned int plus;
+	glGenBuffers(1, &plus);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, plus);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, test.size() * sizeof(int), nullptr, GL_DYNAMIC_READ);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, plus);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
+	std::vector<int> results(test.size());
+
+	
+	computeShader.use();
+	glDispatchCompute(6, 1, 1);
+	glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, plus);
+	glGetBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, results.size() * sizeof(int), results.data());
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+	std::cout << "Wyniki z GPU: ";
+	for (int val : results) 
+	{
+		std::cout << val << ", ";
+	}
+	std::cout << std::endl;
+	
 	while (!glfwWindowShouldClose(window))
 	{
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
-
+		
 		glBindVertexArray(VAO);
 		screenShader.use();
 		glDrawArrays(GL_TRIANGLES, 0, 6);
-
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
 
+	glDeleteBuffers(1, &VBO);
+	glDeleteVertexArrays(1, &VAO);
 	glfwTerminate();
 	return 0;
 }
