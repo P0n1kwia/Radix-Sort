@@ -36,6 +36,7 @@ target_include_directories(glad PUBLIC "${CMAKE_SOURCE_DIR}/external/glad/includ
 
 
 file(GLOB_RECURSE SOURCES "src/*.cpp")
+file(GLOB_RECURSE SHADERS "shaders/*.glsl")
 
 
 add_executable (RadixSort ${SOURCES})
@@ -48,4 +49,10 @@ target_link_libraries(RadixSort PRIVATE glfw glad glm)
 target_compile_definitions(RadixSort PRIVATE ROOT_DIR="${CMAKE_SOURCE_DIR}")
 set_target_properties(RadixSort PROPERTIES 
     VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+)
+add_custom_command(TARGET RadixSort POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    "${CMAKE_SOURCE_DIR}/shaders"
+    "$<TARGET_FILE_DIR:RadixSort>/shaders"
+
 )

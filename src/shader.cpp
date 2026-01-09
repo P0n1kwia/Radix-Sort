@@ -4,7 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-void shader::Compile(const std::string& vertexPath, const std::string& fragmentPath)
+void Shader::Compile(const std::string& vertexPath, const std::string& fragmentPath)
 {
 	bool error = false;
 	std::string vertexCode;
@@ -68,11 +68,11 @@ void shader::Compile(const std::string& vertexPath, const std::string& fragmentP
 
 
 }
-void shader::use()
+void Shader::use()
 {
 	glUseProgram(ID);
 }
-bool shader::CheckCompilationErrors(unsigned int shader, const std::string& type)
+bool Shader::CheckCompilationErrors(unsigned int shader, const std::string& type)
 {
 	bool flag = true;
 	int success;
@@ -116,31 +116,31 @@ bool shader::CheckCompilationErrors(unsigned int shader, const std::string& type
 	}
 	return flag;
 }
-void shader::setFloat(const std::string& name, float value)
+void Shader::setFloat(const std::string& name, float value)
 {
 	glUniform1f(GetUniformLocation(name), value);
 }
-void shader::setVec2(const std::string& name, const glm::vec2& v)
+void Shader::setVec2(const std::string& name, const glm::vec2& v)
 {
 	glUniform2fv(GetUniformLocation(name),1, &v[0]);
 }
-void shader::setMat4(const std::string& name, const glm::mat4& mat)
+void Shader::setMat4(const std::string& name, const glm::mat4& mat)
 {
 	glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, &mat[0][0]);
 }
-void shader::setInt(const std::string& name, int value)
+void Shader::setInt(const std::string& name, int value)
 {
 	glUniform1i(GetUniformLocation(name), value);
 }
-void shader::setVec3(const std::string& name, const glm::vec3& vec)
+void Shader::setVec3(const std::string& name, const glm::vec3& vec)
 {
 	glUniform3fv(GetUniformLocation(name), 1, &vec[0]);
 }
-shader::~shader()
+Shader::~Shader()
 {
 	glDeleteProgram(ID);
 }
-unsigned int shader::GetUniformLocation(const std::string& name)
+unsigned int Shader::GetUniformLocation(const std::string& name)
 {
 	if (uniformLocation.find(name) != uniformLocation.end())
 	{

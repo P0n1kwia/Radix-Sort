@@ -2,7 +2,7 @@
 #include <string>
 #include <map>
 #include <glm/glm.hpp>
-class shader
+class Shader
 {
 public:
 	void Compile(const std::string& vertexPath, const std::string& fragmentPath);
@@ -15,10 +15,10 @@ public:
 	void setVec3(const std::string& name, const glm::vec3& vec);
 	void setInt(const std::string& name, int value);
 
-	shader() = default;
-	~shader();
-	shader(const shader&) = delete;
-	shader& operator=(const shader&) = delete;
+	Shader() = default;
+	~Shader();
+	Shader(const Shader&) = delete;
+	Shader& operator=(const Shader&) = delete;
 private:
 	unsigned int ID = 0;
 	std::map<std::string, unsigned int> uniformLocation;
