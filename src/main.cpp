@@ -74,8 +74,10 @@ int main()
 		return dist(rnd);
 		};
 
+	/* std::vector<int> vec(10);
+    std::generate(vec.begin(), vec.end(), gen);*/
 
-	std::vector<int> test = { 0,2,4,6,8,10 };
+	std::vector<int> test(256,1);
 	unsigned int ssbo;
 	glGenBuffers(1, &ssbo);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
@@ -83,20 +85,21 @@ int main()
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ssbo);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
-	unsigned int plus;
-	glGenBuffers(1, &plus);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, plus);
+	unsigned int ssbo_out;
+	glGenBuffers(1, &ssbo_out);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo_out);
 	glBufferData(GL_SHADER_STORAGE_BUFFER, test.size() * sizeof(int), nullptr, GL_DYNAMIC_READ);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, plus);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, ssbo_out);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
 	std::vector<int> results(test.size());
 
 	
 	computeShader.use();
-	glDispatchCompute(6, 1, 1);
+	glDispatchCompute(1, 1, 1);
+	
 	glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, plus);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo_out);
 	glGetBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, results.size() * sizeof(int), results.data());
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 	std::cout << "Wyniki z GPU: ";
