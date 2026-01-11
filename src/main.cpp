@@ -77,7 +77,9 @@ int main()
 	/* std::vector<int> vec(10);
     std::generate(vec.begin(), vec.end(), gen);*/
 
-	std::vector<int> test(256,1);
+	std::vector<int> test{ 1,1,0,0,1,0 };
+
+
 	unsigned int ssbo;
 	glGenBuffers(1, &ssbo);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
