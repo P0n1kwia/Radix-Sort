@@ -77,7 +77,7 @@ int main()
 	/* std::vector<int> vec(10);
     std::generate(vec.begin(), vec.end(), gen);*/
 
-	std::vector<int> test{ 1,1,0,0,1,0 };
+	std::vector<int> test{ 5,2,7,0,1,6,};
 
 
 	unsigned int ssbo;
