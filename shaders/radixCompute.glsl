@@ -1,5 +1,5 @@
 #version 430 core
-layout(local_size_x = 6, local_size_y = 1, local_size_z = 1) in;
+layout(local_size_x = 1024, local_size_y = 1, local_size_z = 1) in;
 
 layout(std430, binding = 0) buffer InputBuffer {
     int dataIn[];
@@ -10,11 +10,11 @@ layout(std430, binding = 1) buffer OutputBuffer {
 };
 
 
-shared int zeros_array[256*2]; 
+shared int zeros_array[1024*2]; 
 shared int total_zeros;
 
 
-shared int ping_pong[2][256]; 
+shared int ping_pong[2][1024]; 
 
 void main()
 {
@@ -34,7 +34,7 @@ void main()
         bool is_zero_bit = (bit_val == 0);
 
         uint ro = 0;
-        uint wo = 256;
+        uint wo = 1024;
 
 
         if(is_zero_bit) {
@@ -45,7 +45,7 @@ void main()
         barrier(); 
 
 
-        for (int steps = 1; steps < 6; steps *= 2)
+        for (int steps = 1; steps < 1024; steps *= 2)
         {
             int s_val = zeros_array[ro + id];
             if(id >= steps) {
@@ -59,8 +59,8 @@ void main()
         }
 
 
-        if (id == 5) {
-            total_zeros = zeros_array[ro + 5];
+        if (id == 1023) {
+            total_zeros = zeros_array[ro + 1023];
         }
         barrier();
 

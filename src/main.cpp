@@ -62,39 +62,39 @@ int main()
 	//seting up compute shader
 	Shader computeShader;
 	computeShader.CompileCompute("shaders/radixCompute.glsl");
-
+	
 
 	//COMPUTE SHADER
 
 	std::random_device dev;
 	std::mt19937 rnd{ dev() };
-	std::uniform_int_distribution<int> dist{ 1,100000 };
+	std::uniform_int_distribution<int> dist{ 1,10000 };
 
 	auto gen = [&]() {
 		return dist(rnd);
 		};
 
-	/* std::vector<int> vec(10);
-    std::generate(vec.begin(), vec.end(), gen);*/
+	std::vector<int> vec(1024);
+    std::generate(vec.begin(), vec.end(), gen);
 
-	std::vector<int> test{ 5,2,7,0,1,6,};
+
 
 
 	unsigned int ssbo;
 	glGenBuffers(1, &ssbo);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, test.size() * sizeof(int), test.data(),GL_STATIC_DRAW);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, vec.size() * sizeof(int), vec.data(),GL_STATIC_DRAW);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ssbo);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
 	unsigned int ssbo_out;
 	glGenBuffers(1, &ssbo_out);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo_out);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, test.size() * sizeof(int), nullptr, GL_DYNAMIC_READ);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, vec.size() * sizeof(int), nullptr, GL_DYNAMIC_READ);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, ssbo_out);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
-	std::vector<int> results(test.size());
+	std::vector<int> results(vec.size());
 
 	
 	computeShader.use();
